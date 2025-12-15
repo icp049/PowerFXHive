@@ -1,0 +1,64 @@
+##### 📨 SOLO EMAIL WITH ATTACHMENTS #####
+
+Office365Outlook.SendEmailV2(
+    "ipedeglorio@reginalibrary.ca",
+    "hello",
+    "hello",
+    {
+        Attachments:
+        RenameColumns(
+            AttachmentControl.Attachments,
+            Value,
+            ContentBytes
+        )
+    }
+)
+
+
+
+###### 🧾 COMBINED EMAIL WITH GENERATED PDF + USER ATTACHMENTS ######
+
+📄 Generate PDF from container:
+Set(varPDF, PDF(Container2_1));
+
+📝 Create a dynamic PDF file name:
+Set(
+    dynamicFileName,
+    Concatenate(
+        User().FullName,
+        Text(Now(), "yyyymmdd"),
+        Text(Rand() * 90000 + 10000, "0")
+    ) & ".pdf"
+);
+
+📎 Create collection for all attachments:
+ClearCollect(
+    allAttachments,
+    RenameColumns(
+        AttachmentControl.Attachments,
+        Value,
+        ContentBytes
+    )
+);
+
+➕ Add generated PDF to attachments:
+Collect(
+    allAttachments,
+    {
+        Name: dynamicFileName,
+        ContentBytes: varPDF
+    }
+);
+
+📤 Send email with combined attachments:
+Office365Outlook.SendEmailV2(
+    "ipedeglorio@reginalibrary.ca",
+    "Employee Payroll Deduction Form from " & User().FullName,
+    "Hello " & User().FullName &
+    ", This email contains your copy of the completed Employee Payroll Deduction form for Donation. " &
+    "A copy of this form has been sent to Payroll. Please open the attachment, print the document, " &
+    "and get it signed if needed. Return the signed form to the Development office.",
+    {
+        Attachments: allAttachments
+    }
+);
