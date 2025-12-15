@@ -1,0 +1,113 @@
+🧩 SHAREPOINT ATTACHMENT BUTTON + POWER AUTOMATE FLOW (PATTERN)
+---------------------------------------------------------------
+
+📌 COLUMN FORMATTING PATTERN (REFERENCE)
+- Displays a button only when attachments exist
+- Opens attachment link in a new tab
+
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "button",
+  "style": {
+    "border-radius": "5px",
+    "margin": "5px 0px",
+    "padding": "0px",
+    "visibility": "=if([$Attachments] == '0', 'hidden', 'visible')"
+  },
+  "attributes": {
+    "class": "ms-bgColor-themePrimary"
+  },
+  "children": [
+    {
+      "elmType": "a",
+      "txtContent": "Attachments",
+      "style": {
+        "text-decoration": "none",
+        "padding": "10px 0px",
+        "width": "100%"
+      },
+      "attributes": {
+        "href": "[$FileName]",
+        "target": "_blank",
+        "class": "ms-fontColor-white"
+      }
+    }
+  ]
+}
+
+
+🛠️ ACTUAL IMPLEMENTATION (USED IN LIST)
+- Button text customized
+- Uses absolute URL stored in FileName column
+
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/sp/v2/column-formatting.schema.json",
+  "elmType": "button",
+  "style": {
+    "border-radius": "5px",
+    "margin": "5px 0px",
+    "padding": "0px",
+    "visibility": "=if([$Attachments] == '0', 'hidden', 'visible')"
+  },
+  "attributes": {
+    "class": "ms-bgColor-themePrimary"
+  },
+  "children": [
+    {
+      "elmType": "a",
+      "txtContent": "Show Ban Letter",
+      "style": {
+        "text-decoration": "none",
+        "padding": "10px 0px",
+        "width": "100%"
+      },
+      "attributes": {
+        "href": "[$FileName]",   // Uses AbsoluteURL from FileName column
+        "target": "_blank",
+        "class": "ms-fontColor-white"
+      }
+    }
+  ]
+}
+
+
+⚙️ POWER AUTOMATE FLOW PROCEDURE
+-------------------------------
+
+🔔 Trigger:
+- When an item is created or modified
+
+📎 Get Attachment:
+- Use Item ID from trigger as parameter
+
+📝 Update Item:
+- Use Item ID from trigger
+- Populate FileName column
+- In Advanced Parameters → FileName
+  → select AbsoluteURL from Get Attachment action
+
+
+🛑 PREVENT INFINITE LOOP (IMPORTANT)
+-----------------------------------
+
+❗ Update Item will re-trigger the flow → infinite loop
+
+✅ Solution:
+1) Create a Yes/No column named: isUpdated
+   - Default value: No
+
+2) Add a Condition at start of flow:
+   - If isUpdated = Yes → DO NOTHING
+   - If isUpdated = No → continue flow
+
+3) In Update Item action:
+   - Set isUpdated = Yes
+
+
+➕ ADDITIONAL NOTE
+-----------------
+🖼️ When displaying the SharePoint list in a Gallery (Power Apps),
+set the Image control (Advanced) property to:
+
+ImagePosition = ImagePosition.Fit
+(or use .Full if required for your layout)
