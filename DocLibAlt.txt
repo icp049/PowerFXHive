@@ -1,28 +1,44 @@
-Use documentlib as backend
+📚 DOCUMENT LIBRARY BACKEND (POWER APPS + FLOW) – VIEW PDF FROM GALLERY
+---------------------------------------------------------------------
 
+✅ APP (POWER APPS)
+1) Add a Gallery
+2) Connect the Gallery to your Document Library data source (top data source)
 
-App
-Make gallery
-Connect top data source
+3) Gallery OnSelect:
+Set(
+    varDocumentCurrent,
+    URL.Run(Gallery2.Selected.Identifier).result
+);
 
-Gallery -> Onselect 
-
-Set(varDocumentCurrent, URL.Run(Gallery2.Selected.Identifier).result)
-
-PDFViewer
-Document 
-
+4) Add a PDF Viewer control
+- PDFViewer.Document =
 varDocumentCurrent
 
 
-Flow from inside
+⚙️ FLOW (CALLED FROM POWER APPS)
+Goal: return a PDF as a Data URI so the PDF Viewer can display it
+
+1) Trigger:
+- PowerApps (V2)
+
+2) Add Input:
+- Name: DocIdentifier
+
+3) Action:
+- Get file content
+  - Site Address: (your site)
+  - File Identifier: DocIdentifier
+
+4) Compose:
+datauri(base64ToBinary(body('Get_file_content')?['$content']))
+
+5) Respond to a PowerApp or flow:
+- Add Output
+  - Name: Result
+  - Value: Outputs (from Compose)
 
 
-powerapps v2 -> Add input -> name it DocIdentifier
-Get File content -> put site address ... File Identifier -> DocIdentifier
-Compose -> datauri(base64ToBinary(body('Get_file_content')?['$content']))
-Respond to a flow ->Add ioutput -> name it Result -> Outputs
-
-
-// Put image
+🖼️ IMAGE NOTE (POWER APPS)
+To show the selected file thumbnail/image in the gallery:
 Gallery1.Selected.Image.Full
