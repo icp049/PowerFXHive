@@ -1,32 +1,45 @@
-Make an Active Directory Steps 
-//
+🧩 ACTIVE DIRECTORY (AAD) PEOPLE PICKER – POWER APPS STEPS
+--------------------------------------------------------
 
--> query the users from AAD
--> limit it to just 6 results
--> text input label is textinput1
-Office365Users.SearchUserV2({searchTerm: TextInput1.Text, top:6}).value
+🔍 1) QUERY USERS FROM AZURE AD (LIMIT TO 6)
+Text input control:
+- Name: TextInput1
 
-
-Query the image in apps
-Go to image function
-add
-If(!IsBlank(ThisItem.Mail),If(Office365Users.UserPhotoMetadata(ThisItem.Mail).HasPhoto=true,Office365Users.UserPhotoV2(ThisItem.Mail),user))
-user is an image added on media
-
-Onselect ->
-
-UpdateContext({varSelectedPerson:ThisItem})
+Formula:
+Office365Users.SearchUserV2({ searchTerm: TextInput1.Text, top: 6 }).value
 
 
-go to text input
-defult ->
+🖼️ 2) USER PROFILE IMAGE (WITH FALLBACK)
+- Add a default image to Media named: user
 
+Image formula:
+If(
+    !IsBlank(ThisItem.Mail),
+    If(
+        Office365Users.UserPhotoMetadata(ThisItem.Mail).HasPhoto = true,
+        Office365Users.UserPhotoV2(ThisItem.Mail),
+        user
+    ),
+    user
+)
+
+
+✅ 3) SELECT A PERSON
+Gallery item OnSelect:
+UpdateContext({ varSelectedPerson: ThisItem })
+
+
+🏷️ 4) SHOW SELECTED PERSON IN TEXT INPUT
+TextInput1.Default:
 varSelectedPerson.DisplayName
 
-//
-Reset Text inpt...
-Onselect ->
 
-Reset(TextInput1);UpdateContext({varSelectedPerson:Blank()})
+♻️ 5) RESET INPUT + CLEAR SELECTION
+Reset button OnSelect:
+Reset(TextInput1);
+UpdateContext({ varSelectedPerson: Blank() })
 
-//use this to build an ctive directory component that can be placed nywhere in app
+
+ℹ️ NOTE:
+This setup can be used to build a reusable Active Directory / People Picker
+component that can be placed anywhere in the app.
